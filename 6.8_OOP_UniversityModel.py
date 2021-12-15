@@ -51,7 +51,7 @@ class Person:
     @classmethod
     def search_instance_by_name(cls, search_key):
         """list comprehension for getting all class instances by a search key"""
-        return [obj for obj in cls.instances if obj.last_name == search_key]
+        return [obj for obj in cls.instances if (obj.last_name == search_key) or (obj.first_name == search_key)]
 
 
 
@@ -90,20 +90,18 @@ class Student(Person):
         else:
             print(f"No such course '{course_name}' available to enroll in!")
 
+
     # def submit_exam_score(self, course_name, exam_score):
     #     if int(exam_score) <= 60:
     #         return False
     #     else:
     #         return True
 
-
-
     # def write_exam(self, course_name, result):
     #     if result == "passed":
     #         return self.exam_passed(course_name)
     #     else:
     #         return self.exam_failed()
-
 
 
     # Let the student pass a certain subject with its respective credits
@@ -167,17 +165,12 @@ class Professor(Person):
 # jon.exam_passed("Business Informatics", 10)
 
 
-
+mann = Professor("Mann", "Thomas", 34)
 bahlinger = Professor("Bahlinger", "Thomas", 50)
-# print(bahlinger)
-
 bahlinger.teach_course("Wirtschaftsinformatik")
+bahlinger.teach_course("Humbuk")
 # print(bahlinger.supervised_courses)
-
-# bahlinger.teach_course("Maths")
-# print(bahlinger.supervised_courses)
-
-# bahlinger.drop_course("Maths")
+# bahlinger.drop_course("Humbuk")
 # print(bahlinger.supervised_courses)
 
 w1 = Course("Wirtschaftsinformatik", 10, "Informatik")
@@ -185,22 +178,18 @@ w2 = Course("Maths II", 5, "Mathematics")
 
 
 s1 = Student("Albert", "Josh", 26)
-# print(s1.enrollment_number)
 print(Person.person_count)
-
 s2 = Student("Fütterer", "Sarah", 25)
 print(Person.person_count)
+
 print(s1.enrollment_number)
 print(s2.enrollment_number)
-print(s1)
-print(s2)
 
 
-
-bahlinger.teach_course("Humbuk 1")
-
-res = Person.search_instance_by_name("Bahlinger")
-print(res)
+res1 = Person.search_instance_by_name("Josh")
+print(res1)
+res2 = Professor.search_instance_by_name("Thomas")
+print(res2)
 
 
 
