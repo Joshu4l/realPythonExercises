@@ -2,8 +2,9 @@ class Course:
 
     course_list = []
     course_number = 0000
-    max_exam_trials = 3
     instances = []
+
+    max_exam_trials = 3
 
     def __init__(self, course_name, course_ects, course_domain):
 
@@ -175,6 +176,7 @@ class Professor(Person):
     def drop_course(self, course_name):
         """causes a professor to stop teaching a course"""
 
+        # NOTE TO MYSELF: STILL TBD = MAKE THE PROF APPEAR AS THE COURSE INSTANCE'S prof-ATTRIBUTE!
         if course_name.lower() in self.supervised_courses:
             c = self.supervised_courses.index(course_name.lower())
             self.supervised_courses.pop(c)
@@ -202,12 +204,14 @@ bahlinger.drop_course("Business Informatics")
 s1 = Student("Albert", "Josh", 26)
 # Show the number of all people at the university
 print(f"number of <Person> instances: {Person.person_count} \n")
+# Let s1 enroll into a course
 s1.enroll_into_course("Introduction to Python 3")
 
 # Instantiate another new student
 s2 = Student("Fütterer", "Sarah", 25)
 # Show the number of all people at the university again
 print(f"number of <Person> instances: {Person.person_count} \n")
+# Let s2 enroll into a course
 s2.enroll_into_course("Introduction to Python 3")
 # Check s2's study progress
 print(s2.check_progress())
