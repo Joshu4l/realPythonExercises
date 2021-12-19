@@ -156,7 +156,22 @@ class Professor(Person):
 
 
     def teach_course(self, course_name):
-        """causes a professor to start teaching a course and add that course to his personal list"""
+        """causes the following actions to be executed:
+        Check if a <Course> instance with such a <course_name> already exists and if not, instantiate one.
+        Make the professor start teaching a course by adding that course to his personal list.
+        Make the professor appear as the <Course>'s <.professor> attribute-value."""
+
+        # Check if the course is among the instances of <Course> yet
+        # Note that a <Course> instantiation always appends a <course_name> to the university's course list
+        # So if there's no such value in there, it seems to not exist:
+        if not course_name.lower() in Course.course_list:
+            # Instantiate a new course with the <course_name>, the professor started teaching
+            Course(course_name, course_domain=None, course_ects=None)
+
+
+        for course in Course.search_instance_by_name(course_name):
+            # Add the student to the course's participants list
+            course.professor = self
 
         # Check if the course is among the professor's personal course list
         if not course_name.lower() in self.supervised_courses:
@@ -167,16 +182,16 @@ class Professor(Person):
         else:
             print(f"Professor {self.last_name} is already teaching '{course_name}'!")
 
-        # Check if the course is among the instances of <Course> yet
-        if not course_name.lower() in Course.course_list:
-            # Instantiate a new course with the one, the professor started teaching
-            Course(course_name, course_domain=None, course_ects=None)
-
 
     def drop_course(self, course_name):
         """causes a professor to stop teaching a course"""
 
-        # NOTE TO MYSELF: STILL TBD = MAKE THE PROF APPEAR AS THE COURSE INSTANCE'S prof-ATTRIBUTE!
+        # Search for matching courses and ...
+        for course in Course.search_instance_by_name(course_name.lower()):
+            # ... reset the <Course>'s professor attribute
+            if course.professor == self:
+                course.professor = None
+
         if course_name.lower() in self.supervised_courses:
             c = self.supervised_courses.index(course_name.lower())
             self.supervised_courses.pop(c)
@@ -217,18 +232,17 @@ s2.enroll_into_course("Introduction to Python 3")
 print(s2.check_progress())
 
 
-# Check if students actually appear in course's participants list and -counter after they enrolled
+# Check if the students actually appear in course's <participants> and <participants_counter> after they enrolled
 for course_result in Course.search_instance_by_name("Introduction to Python 3"):
     print(f"number of participants in 'Introduction to Python 3': {course_result.participants_counter}")
     print(f"participant names therein:")
     for participant in course_result.participants:
         print(f"- {participant.last_name} {participant.first_name}")
+    # Check if the <professor> instance who started teaching that course actually appears as its attribute value
+    print(f"professor who's teaching that course: {course_result.professor}")
 
 
 search_result_x = Professor.search_instance_by_name("Thomas")
 # print(f"search result for all professors called 'Thomas': {search_result_x}")
 search_result_j = Person.search_instance_by_name("Josh")
 # print(f"search result for all professors called 'Thomas': {search_result_j}")
-
-
-
