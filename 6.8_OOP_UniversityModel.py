@@ -21,6 +21,7 @@ class Course:
         self.participants_counter = 0
         self.participants = []
 
+
     def __str__(self):
         return f"Course name: {self.course_name}, ECTS: {self.course_ects}, Domain: {self.course_domain}"
 
@@ -59,85 +60,6 @@ class Person:
         """list comprehension for getting all instances by a search key
         Works for all classes inheriting from <Person> !"""
         return [obj for obj in cls.instances if (obj.last_name == search_key) or (obj.first_name == search_key)]
-
-
-
-class Student(Person):
-
-    student_count = int(0)
-    ects_tbd = 180
-
-    strikes_max = 3
-    strikes = 0
-
-    def __init__(self, last_name, first_name, enrollment_number):  # Initialize a Student
-        super().__init__(last_name, first_name, enrollment_number)  # <-- ...inherit these initialization-parameters from my super class
-
-        Student.student_count += 1
-        # Beside the inherited attributes, introduce an enrollment number to <self> (= to the initialized instance)
-        self.enrollment_number = f"S-{Student.student_count:04d}"
-        self.enrolled_courses = []
-        self.ects_count = 0
-        print(f"Student object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.enrollment_number} was created. \n")
-
-
-    def check_progress(self):
-        """check a student's progress in terms of ects"""
-        if self.ects_count >= self.ects_tbd:
-            return f"Congrats to {self.first_name} {self.last_name}: Graduation achieved! :)"
-        else:
-            return f"{self.first_name} {self.last_name}'s ECTS-count: {self.ects_count}/{self.ects_tbd} \n"
-
-
-    def enroll_into_course(self, course_name):
-        """Let the student pick up a course"""
-        if course_name.lower() in Course.course_list:
-            # Add the given course to the students personal list of enrolled courses
-            self.enrolled_courses.append(course_name.lower())
-            print(f"{self.first_name} {self.last_name} was enrolled in course '{course_name}'. \n")
-
-            for course in Course.search_instance_by_name(course_name):
-                # Add the student to the course's participants list
-                course.participants.append(self)
-                # Increment the course's number of participants
-                course.participants_counter += 1
-        else:
-            print(f"No such course '{course_name}' available to enroll in!")
-
-
-    # def submit_exam_score(self, course_name, exam_score):
-    #     if int(exam_score) <= 60:
-    #         return False
-    #     else:
-    #         return True
-
-    # def write_exam(self, course_name, result):
-    #     if result == "passed":
-    #         return self.exam_passed(course_name)
-    #     else:
-    #         return self.exam_failed()
-
-
-    # Let the student pass a certain subject with its respective credits
-    def exam_passed(self, course_name, course_ects):
-
-        self.ects_count += course_ects
-        print(f"{self.first_name} {self.last_name} passed {course_name} with {course_ects} ects.")
-        return self.check_progress()
-
-
-    # Exmatriculate the student if he/she fails an exam 3 or more times
-    def exmatricluate(self):
-
-        if self.strikes >= self.strikes_max:
-            print(f"{self.first_name} {self.last_name} failed the exam 3 times. Exmatriculation is being proceeded")
-            del self
-
-
-    # Method for letting a student fail an exam
-    def exam_failed(self, course_name):
-        self.strikes += 1
-        return self.exmatricluate()
 
 
 
@@ -201,6 +123,96 @@ class Professor(Person):
             print(f"No such course '{course_name}' supervised by Professor {self.last_name}.")
 
 
+from random import randint
+class Student(Person):
+
+    student_count = int(0)
+    ects_tbd = 180
+
+    strikes_max = 3
+    strikes = 0
+
+    def __init__(self, last_name, first_name, enrollment_number):  # Initialize a Student
+        super().__init__(last_name, first_name, enrollment_number)  # <-- ...inherit these initialization-parameters from my super class
+
+        Student.student_count += 1
+        # Beside the inherited attributes, introduce an enrollment number to <self> (= to the initialized instance)
+        self.enrollment_number = f"S-{Student.student_count:04d}"
+        self.enrolled_courses = []
+        self.ects_count = 0
+        self.exam_scores = {}
+        print(f"Student object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.enrollment_number} was created. \n")
+
+
+    def check_progress(self):
+        """check a student's progress in terms of ects"""
+        if self.ects_count >= self.ects_tbd:
+            return f"Congrats to {self.first_name} {self.last_name}: Graduation achieved! :)"
+        else:
+            return f"{self.first_name} {self.last_name}'s ECTS-count: {self.ects_count}/{self.ects_tbd} \n"
+
+
+    def enroll_into_course(self, course_name):
+        """Let the student pick up a course"""
+        if course_name.lower() in Course.course_list:
+            # Add the given course to the students personal list of enrolled courses
+            self.enrolled_courses.append(course_name.lower())
+            print(f"{self.first_name} {self.last_name} was enrolled in course '{course_name}'. \n")
+
+            for course in Course.search_instance_by_name(course_name):
+                # Add the student to the course's participants list
+                course.participants.append(self)
+                # Increment the course's number of participants
+                course.participants_counter += 1
+        else:
+            print(f"No such course '{course_name}' available to enroll in!")
+
+
+    def write_exam(self, course_name):
+
+        res = [course.course_name for course in Course.search_instance_by_name(course_name)]
+
+        if course_name.lower() in res:
+            self.exam_scores[course_name] = {"grades": [randint(1,101)]}
+            print(self.exam_scores)
+        
+        else:
+            print("no such course found")
+        
+        # if randint(0,101) == 100:
+        #     course.participants.append(self)
+        #     self.grade = "A"
+        # elif randint(1,100) <= 93:
+        #     grade = "B"
+        # elif randint(1,100) <= 86:
+        #     grade = "C"
+        # elif randint(1,100) <= 60:
+        #     grade = "D"
+        # return grade
+
+
+    # Let the student pass a certain subject with its respective credits
+    def exam_passed(self, course_name, course_ects):
+
+        self.ects_count += course_ects
+        print(f"{self.first_name} {self.last_name} passed {course_name} with {course_ects} ects.")
+        return self.check_progress()
+
+
+    # Exmatriculate the student if he/she fails an exam 3 or more times
+    def exmatricluate(self):
+
+        if self.strikes >= self.strikes_max:
+            print(f"{self.first_name} {self.last_name} failed the exam 3 times. Exmatriculation is being proceeded")
+            del self
+
+
+    # Method for letting a student fail an exam
+    def exam_failed(self, course_name):
+        self.strikes += 1
+        return self.exmatricluate()
+
+
 
 # Instantiate a course
 w1 = Course("Business Informatics", 10, "Informatics")
@@ -246,3 +258,5 @@ search_result_x = Professor.search_instance_by_name("Thomas")
 # print(f"search result for all professors called 'Thomas': {search_result_x}")
 search_result_j = Person.search_instance_by_name("Josh")
 # print(f"search result for all professors called 'Thomas': {search_result_j}")
+
+s2.write_exam("Introduction to Python 3")
