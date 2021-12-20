@@ -75,7 +75,7 @@ class Professor(Person):
         Professor.staff_count += 1  # Beside the inherited attributes, ...
         self.staff_number = f"T-{Professor.staff_count:04d}" # ... introduce a staff number to <self>
         self.supervised_courses = []  # ... introduce a personal course list to <self>
-
+        print(f"Professor object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.staff_number} was created. \n")
 
     def teach_course(self, course_name):
         """causes the following actions to be executed:
@@ -170,14 +170,26 @@ class Student(Person):
 
     def write_exam(self, course_name):
 
-        res = [course.course_name for course in Course.search_instance_by_name(course_name)]
+        course_tbd = [course.course_name for course in Course.search_instance_by_name(course_name)]
 
-        if course_name.lower() in res:
-            self.exam_scores[course_name] = {"grades": [randint(1,101)]}
-            print(self.exam_scores)
-        
+        # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
+        if course_name.lower() in course_tbd:
+
+            # Check if there already was an attempt for that course exam before
+            if course_name.lower() in self.exam_scores.keys():
+                # add another score resulting from the current exam attempt
+                self.exam_scores[course_name.lower()]["grades"].append(randint(1,101))
+                # increment the number of trials by one
+                self.exam_scores[course_name.lower()]["trials"] += 1
+
+            # If there has been no attempt before
+            else:
+                # create a first one
+                self.exam_scores[course_name.lower()] = {"grades": [randint(1, 101)], "trials": 1}
+
+        # If a corresponding <Course> instance does not exist
         else:
-            print("no such course found")
+            print(f"there is no such course '{course_name}' available for examination")
         
         # if randint(0,101) == 100:
         #     course.participants.append(self)
@@ -260,3 +272,8 @@ search_result_j = Person.search_instance_by_name("Josh")
 # print(f"search result for all professors called 'Thomas': {search_result_j}")
 
 s2.write_exam("Introduction to Python 3")
+print(s2.exam_scores)
+s2.write_exam("Introduction to Python 3")
+print(s2.exam_scores)
+
+
