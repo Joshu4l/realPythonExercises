@@ -139,6 +139,7 @@ class Student(Person):
         # Beside the inherited attributes, introduce an enrollment number to <self> (= to the initialized instance)
         self.enrollment_number = f"S-{Student.student_count:04d}"
         self.enrolled_courses = []
+        self.accomplished_courses = []
         self.ects_count = 0
         self.exam_scores = {}
         print(f"Student object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.enrollment_number} was created. \n")
@@ -168,67 +169,88 @@ class Student(Person):
             print(f"No such course '{course_name}' available to enroll in!")
 
 
-    def write_exam(self, course_name):
 
-        course_tbd = [course.course_name for course in Course.search_instance_by_name(course_name)]
 
-        # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
-        if course_name.lower() in course_tbd:
-
-            # Check if there already was an attempt for that course exam before
-            if course_name.lower() in self.exam_scores.keys():
-                # add another score resulting from the current exam attempt
-                self.exam_scores[course_name.lower()]["grades"].append(randint(1,101))
-                # increment the number of trials by one
-                self.exam_scores[course_name.lower()]["trials"] += 1
-
-            # If there has been no attempt before
-            else:
-                # create a first one
-                self.exam_scores[course_name.lower()] = {"grades": [randint(1, 101)], "trials": 1}
-
-        # If a corresponding <Course> instance does not exist
+    def get_grade(self):
+        """generates a random exam score and assigns it to a grade"""
+        grade = randint(20, 100)
+        if grade >= 60:
+            return "D"
+        elif grade >= 70:
+            return "C"
+        elif grade >= 80:
+            return "B"
+        elif grade >= 90:
+            return "A"
         else:
-            print(f"there is no such course '{course_name}' available for examination")
-        
-        # if randint(0,101) == 100:
-        #     course.participants.append(self)
-        #     self.grade = "A"
-        # elif randint(1,100) <= 93:
-        #     grade = "B"
-        # elif randint(1,100) <= 86:
-        #     grade = "C"
-        # elif randint(1,100) <= 60:
-        #     grade = "D"
-        # return grade
+            return "E"
 
 
-    # Let the student pass a certain subject with its respective credits
-    def exam_passed(self, course_name, course_ects):
-
-        self.ects_count += course_ects
-        print(f"{self.first_name} {self.last_name} passed {course_name} with {course_ects} ects.")
-        return self.check_progress()
-
+    def accomplish_course(self, course_name):
+        """shifts a course from the student's enrolled list into his/her accomplished list"""
+        self.enrolled_courses.pop(self.enrolled_courses.index(course_name))
+        self.accomplished_courses.append(course_name)
+        print(f"{self.first_name} {self.last_name} passed '{course_name}'.")
 
     # Exmatriculate the student if he/she fails an exam 3 or more times
-    def exmatricluate(self):
+    def exmatricluate(self, course_name, grade):
 
-        if self.strikes >= self.strikes_max:
-            print(f"{self.first_name} {self.last_name} failed the exam 3 times. Exmatriculation is being proceeded")
-            del self
+        # add another score resulting from the current exam attempt
+        self.exam_scores[course_name.lower()]["grades"].append(grade)
+        # increment the number of trials by one
+        self.exam_scores[course_name.lower()]["trials"] += 1
+
+        print(f"{self.first_name} {self.last_name} failed '{course_name}' 3 times. Exmatriculation was proceeded")
+        del self
 
 
-    # Method for letting a student fail an exam
-    def exam_failed(self, course_name):
-        self.strikes += 1
-        return self.exmatricluate()
+    def fail_exam(self, course_name, grade):
+        # Check if there have already been attempts before
+        print("x")
+
+
+
+    def write_exam(self, course_name):
+        # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
+        course_tbd = [course.course_name for course in Course.search_instance_by_name(course_name)]
+        if course_name.lower() in course_tbd:
+
+            # Get a random score and assign it to a grade
+            grade = Student.get_grade(self)
+
+            # Check if there are already any grades existing for that <Student> instance with that <course_name> at all
+            if course_name.lower() in self.exam_scores.keys():
+
+                # Catch the current grades-record for that <Student> instance and that <course_name>
+                currently = self.exam_scores[course_name.lower()]["grades"]
+
+                # if the LATEST ATTEMPT was PASSED (which means, not an 'E')
+                if currently[-1] != "E":
+                    print(f"{self.first_name} {self.last_name} already passed '{course_name}' successfully!")
+                    print(f"current status: {self.exam_scores} \n")
+
+                # if the LATEST ATTEMPT had been FAILED in the past, append the current attempt
+                else:
+                    self.exam_scores[course_name.lower()]["grades"].append(grade)
+                    self.exam_scores[course_name.lower()]["trials"] += 1
+                    print(f"{self.first_name} {self.last_name} made another attempt on '{course_name}' with result >{grade}<.")
+                    print(f"current status: {self.exam_scores} \n")
+
+            # if this is the first attempt for that course, create an <.exam_scores> entry for
+            else:
+                self.exam_scores[course_name.lower()] = {"grades": [grade], "trials": 1}
+                print(f"{self.first_name} {self.last_name} made a fist attempt on '{course_name}' with result >{grade}<.")
+                print(f"current status: {self.exam_scores} \n")
+
+
+        else:
+            print(f"no such subject '{course_name}' available for examination")
+
 
 
 
 # Instantiate a course
 w1 = Course("Business Informatics", 10, "Informatics")
-
 
 # Instantiate a new professor
 bahlinger = Professor("Bahlinger", "Thomas", 50)
@@ -237,7 +259,6 @@ bahlinger.teach_course("Business Informatics")
 bahlinger.teach_course("Introduction to Python 3")
 # Let him drop a course
 bahlinger.drop_course("Business Informatics")
-
 
 # Instantiate a new student
 s1 = Student("Albert", "Josh", 26)
@@ -256,24 +277,12 @@ s2.enroll_into_course("Introduction to Python 3")
 print(s2.check_progress())
 
 
-# Check if the students actually appear in course's <participants> and <participants_counter> after they enrolled
-for course_result in Course.search_instance_by_name("Introduction to Python 3"):
-    print(f"number of participants in 'Introduction to Python 3': {course_result.participants_counter}")
-    print(f"participant names therein:")
-    for participant in course_result.participants:
-        print(f"- {participant.last_name} {participant.first_name}")
-    # Check if the <professor> instance who started teaching that course actually appears as its attribute value
-    print(f"professor who's teaching that course: {course_result.professor}")
-
-
-search_result_x = Professor.search_instance_by_name("Thomas")
-# print(f"search result for all professors called 'Thomas': {search_result_x}")
-search_result_j = Person.search_instance_by_name("Josh")
-# print(f"search result for all professors called 'Thomas': {search_result_j}")
+print(f"initial scenario: {s2.exam_scores} \n")
 
 s2.write_exam("Introduction to Python 3")
-print(s2.exam_scores)
 s2.write_exam("Introduction to Python 3")
-print(s2.exam_scores)
+s2.write_exam("Introduction to Python 3")
+
+
 
 
