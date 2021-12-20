@@ -169,8 +169,6 @@ class Student(Person):
             print(f"No such course '{course_name}' available to enroll in!")
 
 
-
-
     def get_grade(self):
         """generates a random exam score and assigns it to a grade"""
         grade = randint(20, 100)
@@ -209,7 +207,6 @@ class Student(Person):
         print("x")
 
 
-
     def write_exam(self, course_name):
         # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
         course_tbd = [course.course_name for course in Course.search_instance_by_name(course_name)]
@@ -241,7 +238,6 @@ class Student(Person):
                 self.exam_scores[course_name.lower()] = {"grades": [grade], "trials": 1}
                 print(f"{self.first_name} {self.last_name} made a fist attempt on '{course_name}' with result >{grade}<.")
                 print(f"current status: {self.exam_scores} \n")
-
 
         else:
             print(f"no such subject '{course_name}' available for examination")
