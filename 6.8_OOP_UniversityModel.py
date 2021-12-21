@@ -127,15 +127,14 @@ from random import randint
 class Student(Person):
 
     student_count = int(0)
+    student_instances = []
     ects_tbd = 180
-
-    strikes_max = 3
-    strikes = 0
 
     def __init__(self, last_name, first_name, enrollment_number):  # Initialize a Student
         super().__init__(last_name, first_name, enrollment_number)  # <-- ...inherit these initialization-parameters from my super class
 
         Student.student_count += 1
+        Student.student_instances.append(self)
         # Beside the inherited attributes, introduce an enrollment number to <self> (= to the initialized instance)
         self.enrollment_number = f"S-{Student.student_count:04d}"
         self.enrolled_courses = []
@@ -202,9 +201,17 @@ class Student(Person):
         del self
 
 
-    def fail_exam(self, course_name, grade):
-        # Check if there have already been attempts before
-        print("x")
+    def evaluate_exam_trials(self, course_name):
+
+        for key, value in self.exam_scores[course_name].items():
+            if key == "grades":
+                course_grades = value
+
+                if (len(course_grades) >= 3) and (course_grades[-1] == "E"):
+                    print("3rd attempt failed!")
+                else:
+                    print(f"phew, lucky you! Attempt no. {len(course_grades)} was passed successfully \n"
+                          f"status as of now: {self.exam_scores} \n")
 
 
     def write_exam(self, course_name):
@@ -221,7 +228,7 @@ class Student(Person):
                 # Catch the current grades-record for that <Student> instance and that <course_name>
                 currently = self.exam_scores[course_name.lower()]["grades"]
 
-                # if the LATEST ATTEMPT was PASSED (which means, not an 'E')
+                # if the LATEST ATTEMPT was already PASSED (which means, not an 'E')
                 if currently[-1] != "E":
                     print(f"{self.first_name} {self.last_name} already passed '{course_name}' successfully!")
                     print(f"current status: {self.exam_scores} \n")
@@ -231,7 +238,11 @@ class Student(Person):
                     self.exam_scores[course_name.lower()]["grades"].append(grade)
                     self.exam_scores[course_name.lower()]["trials"] += 1
                     print(f"{self.first_name} {self.last_name} made another attempt on '{course_name}' with result >{grade}<.")
-                    print(f"current status: {self.exam_scores} \n")
+                    self.evaluate_exam_trials(course_name.lower())
+
+
+                    # Also check if the number of attempts still lies within the range of the course's max. strikes
+
 
             # if this is the first attempt for that course, create an <.exam_scores> entry for
             else:
@@ -278,7 +289,5 @@ print(f"initial scenario: {s2.exam_scores} \n")
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
-
-
 
 
