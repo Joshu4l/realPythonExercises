@@ -170,17 +170,19 @@ class Student(Person):
 
     def get_grade(self):
         """generates a random exam score and assigns it to a grade"""
-        grade = randint(20, 100)
-        if grade >= 60:
-            return "D"
-        elif grade >= 70:
-            return "C"
-        elif grade >= 80:
-            return "B"
+        grade = randint(40, 65)
+        if grade < 60:
+            return "E"
         elif grade >= 90:
             return "A"
+        elif grade >= 80:
+            return "B"
+        elif grade >= 70:
+            return "C"
+        elif grade >= 60:
+            return "D"
         else:
-            return "E"
+            print("wrong score")
 
 
     def accomplish_course(self, course_name):
@@ -189,30 +191,26 @@ class Student(Person):
         self.accomplished_courses.append(course_name)
         print(f"{self.first_name} {self.last_name} passed '{course_name}'.")
 
+
+
     # Exmatriculate the student if he/she fails an exam 3 or more times
-    def exmatricluate(self, course_name, grade):
+    def exmatricluate(self, course_name):
 
-        # add another score resulting from the current exam attempt
-        self.exam_scores[course_name.lower()]["grades"].append(grade)
-        # increment the number of trials by one
-        self.exam_scores[course_name.lower()]["trials"] += 1
-
-        print(f"{self.first_name} {self.last_name} failed '{course_name}' 3 times. Exmatriculation was proceeded")
-        del self
+        print(f"{self.first_name} {self.last_name} failed '{course_name}' three times. Exmatriculation was proceeded")
+        print(self.exam_scores)
 
 
-    def evaluate_exam_trials(self, course_name):
+    def check_number_of_exam_attempts(self, course_name, grade):
 
         for key, value in self.exam_scores[course_name].items():
             if key == "grades":
                 course_grades = value
 
                 if (len(course_grades) >= 3) and (course_grades[-1] == "E"):
-                    print("3rd attempt failed!")
+                    self.exmatricluate(course_name)
                 else:
-                    print(f"phew, lucky you! Attempt no. {len(course_grades)} was passed successfully \n"
-                          f"status as of now: {self.exam_scores} \n")
-
+                    print(f"{self.first_name} {self.last_name} failed another attempt on '{course_name}' with result >{grade}<.")
+                    print(f"current status: {self.exam_scores} \n")
 
     def write_exam(self, course_name):
         # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
@@ -222,34 +220,39 @@ class Student(Person):
             # Get a random score and assign it to a grade
             grade = Student.get_grade(self)
 
-            # Check if there are already any grades existing for that <Student> instance with that <course_name> at all
+            # Check IF there are already ANY EXISTING GRADES for that <Student> instance with that <course_name>
             if course_name.lower() in self.exam_scores.keys():
 
-                # Catch the current grades-record for that <Student> instance and that <course_name>
-                currently = self.exam_scores[course_name.lower()]["grades"]
+                # Catch the CURRENT GRADES-RECORD for that <Student> instance and that <course_name>
+                grades_record = self.exam_scores[course_name.lower()]["grades"]
 
                 # if the LATEST ATTEMPT was already PASSED (which means, not an 'E')
-                if currently[-1] != "E":
+                if grades_record[-1] != "E":
                     print(f"{self.first_name} {self.last_name} already passed '{course_name}' successfully!")
                     print(f"current status: {self.exam_scores} \n")
 
-                # if the LATEST ATTEMPT had been FAILED in the past, append the current attempt
+                # if the LATEST ATTEMPTS were FAILED in the past but the CURRENT ATTEMPT IS SUCCESSFUL
+                elif (grades_record[-1] == "E") and (grade != "E"):
+                    self.exam_scores[course_name.lower()]["grades"].append(grade)
+                    self.exam_scores[course_name.lower()]["trials"] += 1
+                    print(f"{self.first_name} {self.last_name}'s latest attempt on '{course_name}' was successful: grade >{grade}<")
+                    print(f"current status: {self.exam_scores} \n")
+
+                # if the LATEST ATTEMPTS were FAILED in the past and the CURRENT ATTEMPT IS FAILED AGAIN
                 else:
                     self.exam_scores[course_name.lower()]["grades"].append(grade)
                     self.exam_scores[course_name.lower()]["trials"] += 1
-                    print(f"{self.first_name} {self.last_name} made another attempt on '{course_name}' with result >{grade}<.")
-                    self.evaluate_exam_trials(course_name.lower())
-
-
                     # Also check if the number of attempts still lies within the range of the course's max. strikes
+                    self.check_number_of_exam_attempts(course_name.lower(), grade)
 
 
-            # if this is the first attempt for that course, create an <.exam_scores> entry for
+            # if this is the FIRST ATTEMPT FOR THAT COURSE, create an <.exam_scores> entry for
             else:
                 self.exam_scores[course_name.lower()] = {"grades": [grade], "trials": 1}
                 print(f"{self.first_name} {self.last_name} made a fist attempt on '{course_name}' with result >{grade}<.")
                 print(f"current status: {self.exam_scores} \n")
 
+        # if there is no <Course> instance existing with that course_name
         else:
             print(f"no such subject '{course_name}' available for examination")
 
@@ -282,12 +285,15 @@ print(f"number of <Person> instances: {Person.person_count} \n")
 s2.enroll_into_course("Introduction to Python 3")
 # Check s2's study progress
 print(s2.check_progress())
+print("\n")
 
-
-print(f"initial scenario: {s2.exam_scores} \n")
 
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
+
+print(s2)
+
+
 
 
