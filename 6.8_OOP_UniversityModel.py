@@ -1,25 +1,25 @@
+# OOP-model for a university:
+
 class Course:
 
+    instances = []
     course_list = []
     course_number = 0000
-    instances = []
-
-    max_exam_trials = 3
 
     def __init__(self, course_name, course_ects, course_domain):
 
         Course.instances.append(self)
 
         self.course_name = course_name.lower()
-        # Check if the course already exists, otherwise add it to the list of offered courses
+        # Check if the course already exists, otherwise add its <course_name> to the list of offered courses
         if not course_name.lower() in Course.course_list:
             Course.course_list.append(self.course_name)
 
         self.course_ects = course_ects
         self.course_domain = course_domain
-        self.professor = ""
-        self.participants_counter = 0
+        self.professor = None
         self.participants = []
+        self.participants_count = 0
 
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Professor(Person):
         self.supervised_courses = []  # ... introduce a personal course list to <self>
         print(f"Professor object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.staff_number} was created. \n")
 
-    def teach_course(self, course_name):
+    def teach_course(self, course_name, course_ects, course_domain):
         """causes the following actions to be executed:
         Check if a <Course> instance with such a <course_name> already exists and if not, instantiate one.
         Make the professor start teaching a course by adding that course to his personal list.
@@ -88,7 +88,7 @@ class Professor(Person):
         # So if there's no such value in there, it seems to not exist:
         if not course_name.lower() in Course.course_list:
             # Instantiate a new course with the <course_name>, the professor started teaching
-            Course(course_name, course_domain=None, course_ects=None)
+            Course(course_name, course_ects, course_domain)
 
 
         for course in Course.search_instance_by_name(course_name):
@@ -128,17 +128,24 @@ class Student(Person):
 
     student_count = int(0)
     student_instances = []
+    dropout_instances = []
     ects_tbd = 180
 
-    def __init__(self, last_name, first_name, enrollment_number):  # Initialize a Student
-        super().__init__(last_name, first_name, enrollment_number)  # <-- ...inherit these initialization-parameters from my super class
+    def __init__(self, last_name, first_name, age):  # Initialize a Student
+        super().__init__(last_name, first_name, age)  # <-- ...inherit these initialization-parameters from my super class
 
         Student.student_count += 1
         Student.student_instances.append(self)
         # Beside the inherited attributes, introduce an enrollment number to <self> (= to the initialized instance)
         self.enrollment_number = f"S-{Student.student_count:04d}"
+        self.study_status = "Active"
+
         self.enrolled_courses = []
+        self.enrolled_courses_count = 0
+
         self.accomplished_courses = []
+        self.accomplished_courses_count = 0
+
         self.ects_count = 0
         self.exam_scores = {}
         print(f"Student object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.enrollment_number} was created. \n")
@@ -154,23 +161,29 @@ class Student(Person):
 
     def enroll_into_course(self, course_name):
         """Let the student pick up a course"""
+        # check for the sheer existence of the given course
         if course_name.lower() in Course.course_list:
-            # Add the given course to the students personal list of enrolled courses
-            self.enrolled_courses.append(course_name.lower())
+
+            # pick out every matching course instance <i>
+            for i in Course.search_instance_by_name(course_name.lower()):
+                # Add the <Student> instance to the course's list of participants
+                i.participants.append(self)
+                i.participants_count = len(i.participants)
+                # Add the given <Course> instance to the student's personal list of enrolled courses
+                self.enrolled_courses.append(i)
+                self.enrolled_courses_count = len(self.enrolled_courses)
+
+            # Show an enrollment feedback
             print(f"{self.first_name} {self.last_name} was enrolled in course '{course_name}'. \n")
 
-            for course in Course.search_instance_by_name(course_name):
-                # Add the student to the course's participants list
-                course.participants.append(self)
-                # Increment the course's number of participants
-                course.participants_counter += 1
+        # if no identically-named course exists
         else:
             print(f"No such course '{course_name}' available to enroll in!")
 
 
     def get_grade(self):
         """generates a random exam score and assigns it to a grade"""
-        grade = randint(40, 65)
+        grade = randint(40, 62)
         if grade < 60:
             return "E"
         elif grade >= 90:
@@ -187,30 +200,69 @@ class Student(Person):
 
     def accomplish_course(self, course_name):
         """shifts a course from the student's enrolled list into his/her accomplished list"""
-        self.enrolled_courses.pop(self.enrolled_courses.index(course_name))
-        self.accomplished_courses.append(course_name)
-        print(f"{self.first_name} {self.last_name} passed '{course_name}'.")
 
+        # Check if the given course even is among the student's enrolled ones
+        for i in self.enrolled_courses:
 
+            # if so, pick the matching course object, and...
+            if course_name.lower() == i.course_name:
 
-    # Exmatriculate the student if he/she fails an exam 3 or more times
-    def exmatricluate(self, course_name):
+                # ... delete the student from its participants
+                i.participants.pop(i.participants.index(self))
+                i.participants_count = len(i.participants)
 
-        print(f"{self.first_name} {self.last_name} failed '{course_name}' three times. Exmatriculation was proceeded")
-        print(self.exam_scores)
+                # ...delete it from the student's enrolled ones
+                self.enrolled_courses.pop(self.enrolled_courses.index(i))
+                self.enrolled_courses_count = len(self.enrolled_courses)
+
+                # ...add it to the student's accomplished ones
+                self.accomplished_courses.append(i)
+                self.accomplished_courses_count = len(self.accomplished_courses)
+                print(f"successfully accomplished {course_name}")
+
+            # if there is no such course name among the student's enrolled ones
+            else:
+                print(
+                    f"No such course '{course_name}', in which {self.first_name} {self.last_name} is enrolled in currently")
 
 
     def check_number_of_exam_attempts(self, course_name, grade):
+        """checks past exam_score-records for the given course and
+        evaluates for the case of '3rd attempt with result >E<'
+        or alternatively
+        evaluates for the case of '2nd attempt with result >E<' """
 
         for key, value in self.exam_scores[course_name].items():
             if key == "grades":
                 course_grades = value
 
+                # scenario for a 3rd failed attempt
                 if (len(course_grades) >= 3) and (course_grades[-1] == "E"):
-                    self.exmatricluate(course_name)
+                    print(f"{self.first_name} {self.last_name} failed '{course_name}' three times. Exmatriculation was proceeded")
+                    self.exmatricluate(course_name.lower())
+
+                # scenario for a 2nd failed attempt
                 else:
                     print(f"{self.first_name} {self.last_name} failed another attempt on '{course_name}' with result >{grade}<.")
                     print(f"current status: {self.exam_scores} \n")
+
+
+    def exmatricluate(self, course_name):
+        """causes the student to:
+        change his <study_status> to 'Dropped out',
+        remove himself from the list of <Student> instances,
+        remove himself from the course's participants-list"""
+
+        Student.student_instances.pop(Student.student_instances.index(self))
+        Student.dropout_instances.append(self)
+        self.study_status = "Dropped out"
+
+        for course in Course.instances:
+            if course.course_name == course_name:
+                course.participants.pop(course.participants.index(self))
+                course.participants_counter = len(course.participants)
+                # course.participants_counter -= 1  # might be smarter to refactor that attribute value to <len(participants)>
+
 
     def write_exam(self, course_name):
         # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
@@ -237,6 +289,7 @@ class Student(Person):
                     self.exam_scores[course_name.lower()]["trials"] += 1
                     print(f"{self.first_name} {self.last_name}'s latest attempt on '{course_name}' was successful: grade >{grade}<")
                     print(f"current status: {self.exam_scores} \n")
+                    self.accomplish_course(course_name.lower())
 
                 # if the LATEST ATTEMPTS were FAILED in the past and the CURRENT ATTEMPT IS FAILED AGAIN
                 else:
@@ -265,8 +318,8 @@ w1 = Course("Business Informatics", 10, "Informatics")
 # Instantiate a new professor
 bahlinger = Professor("Bahlinger", "Thomas", 50)
 # Let him teach some courses
-bahlinger.teach_course("Business Informatics")
-bahlinger.teach_course("Introduction to Python 3")
+bahlinger.teach_course("Business Informatics",5,"Informatics")
+bahlinger.teach_course("Introduction to Python 3", 5, "Informatics")
 # Let him drop a course
 bahlinger.drop_course("Business Informatics")
 
@@ -288,12 +341,17 @@ print(s2.check_progress())
 print("\n")
 
 
+print(f"student instances: {Student.student_instances} \n")
+
+
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
+print(s2.study_status)
 
-print(s2)
+s2.enroll_into_course("Business Informatics")
+s1.enroll_into_course("Business Informatics")
+print(s1.enrolled_courses)
+print(s1.enrolled_courses_count)
 
-
-
-
+print(w1.participants_count)
