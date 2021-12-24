@@ -150,6 +150,8 @@ class Student(Person):
         self.exam_scores = {}
         print(f"Student object '{self.first_name} {self.last_name}', age: {self.age}, enrollment number: {self.enrollment_number} was created. \n")
 
+    def __str__(self):
+        print(f"'{self.last_name} {self.first_name}', age: {self.age}, enrollment number: {self.enrollment_number}")
 
     def check_progress(self):
         """check a student's progress in terms of ects"""
@@ -166,15 +168,21 @@ class Student(Person):
 
             # pick out every matching course instance <i>
             for i in Course.search_instance_by_name(course_name.lower()):
-                # Add the <Student> instance to the course's list of participants
-                i.participants.append(self)
-                i.participants_count = len(i.participants)
-                # Add the given <Course> instance to the student's personal list of enrolled courses
-                self.enrolled_courses.append(i)
-                self.enrolled_courses_count = len(self.enrolled_courses)
 
-            # Show an enrollment feedback
-            print(f"{self.first_name} {self.last_name} was enrolled in course '{course_name}'. \n")
+                # also check if student is already enrolled!
+                if not self in i.participants:
+
+                    # Add the <Student> instance to the course's list of participants
+                    i.participants.append(self)
+                    i.participants_count = len(i.participants)
+                    # Add the given <Course> instance to the student's personal list of enrolled courses
+                    self.enrolled_courses.append(i)
+                    self.enrolled_courses_count = len(self.enrolled_courses)
+                    # Show an enrollment feedback
+                    print(f"{self.first_name} {self.last_name} was enrolled in course '{course_name}'. \n")
+
+                else:
+                    print(f"{self.first_name} {self.last_name} is already enrolled in '{course_name}'!")
 
         # if no identically-named course exists
         else:
@@ -218,12 +226,10 @@ class Student(Person):
                 # ...add it to the student's accomplished ones
                 self.accomplished_courses.append(i)
                 self.accomplished_courses_count = len(self.accomplished_courses)
-                print(f"successfully accomplished {course_name}")
 
             # if there is no such course name among the student's enrolled ones
             else:
-                print(
-                    f"No such course '{course_name}', in which {self.first_name} {self.last_name} is enrolled in currently")
+                print(f"No such course '{course_name}', in which {self.first_name} {self.last_name} is enrolled in currently")
 
 
     def check_number_of_exam_attempts(self, course_name, grade):
@@ -261,8 +267,9 @@ class Student(Person):
             if course.course_name == course_name:
                 course.participants.pop(course.participants.index(self))
                 course.participants_counter = len(course.participants)
-                # course.participants_counter -= 1  # might be smarter to refactor that attribute value to <len(participants)>
 
+                self.enrolled_courses.pop(self.enrolled_courses.index(course))
+                self.enrolled_courses_count = len(self.enrolled_courses)
 
     def write_exam(self, course_name):
         # Check if there's even a <Course> instance with a <course_name> equal to the search parameter
@@ -298,7 +305,6 @@ class Student(Person):
                     # Also check if the number of attempts still lies within the range of the course's max. strikes
                     self.check_number_of_exam_attempts(course_name.lower(), grade)
 
-
             # if this is the FIRST ATTEMPT FOR THAT COURSE, create an <.exam_scores> entry for
             else:
                 self.exam_scores[course_name.lower()] = {"grades": [grade], "trials": 1}
@@ -313,7 +319,7 @@ class Student(Person):
 
 
 # Instantiate a course
-w1 = Course("Business Informatics", 10, "Informatics")
+c1 = Course("Business Informatics", 10, "Informatics")
 
 # Instantiate a new professor
 bahlinger = Professor("Bahlinger", "Thomas", 50)
@@ -336,6 +342,8 @@ s2 = Student("Fütterer", "Sarah", 25)
 print(f"number of <Person> instances: {Person.person_count} \n")
 # Let s2 enroll into a course
 s2.enroll_into_course("Introduction to Python 3")
+# Let s2 enroll into the same course again to see if the request gets rejected accordingly
+s2.enroll_into_course("Introduction to Python 3")
 # Check s2's study progress
 print(s2.check_progress())
 print("\n")
@@ -349,9 +357,7 @@ s2.write_exam("Introduction to Python 3")
 s2.write_exam("Introduction to Python 3")
 print(s2.study_status)
 
-s2.enroll_into_course("Business Informatics")
-s1.enroll_into_course("Business Informatics")
-print(s1.enrolled_courses)
-print(s1.enrolled_courses_count)
 
-print(w1.participants_count)
+part = [i.participants for i in Course.search_instance_by_name("introduction to python 3")]
+print(len(part))
+
