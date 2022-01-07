@@ -25,7 +25,7 @@ def show_contents(target_directory):
 # call the 'show_contents'-function on our new_directory
 show_contents(new_directory)
 # demonstrate what happens when attempting to show_contents of a file
-show_contents(pathlib.Path(r"C:\Users\Joshua Albert\PycharmProjects\realPythonExercises\new_directory\program1.py"))
+show_contents(pathlib.Path(r"/new_directory/program1.py"))
 print("\n")
 
 
