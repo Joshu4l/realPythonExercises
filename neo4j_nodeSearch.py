@@ -1,7 +1,7 @@
 from neo4j import GraphDatabase
 
 uri = "neo4j://localhost:7687"
-driver = GraphDatabase.driver(uri, auth=("neo4j", "Tiger3nte"))
+driver = GraphDatabase.driver(uri, auth=("neo4j", "")) # still needs to revoke password
 
 def get_professors(tx, name):
 
