@@ -28,7 +28,7 @@ def calculate_distances(dataframe, column):
 			if value == other_value:
 				continue
 
-			# ignore comparisons that are already contained the other way round
+			# ignore redundant comparisons that are already contained the other way round
 			elif check_redundancy(value,other_value) in results:
 				continue
 
