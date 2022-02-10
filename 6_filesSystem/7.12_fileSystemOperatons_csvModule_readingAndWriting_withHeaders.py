@@ -9,10 +9,10 @@ filepath.parent.mkdir(parents=True, exist_ok=True)
 filepath.touch(exist_ok=True)
 
 
-first_content = [["name,department,salary"],
-				 ["Lee","Operations",75,000.00],
-				 ["Jane","Engineering",85,000.00],
-				 ["Diego","Sales",80,000.00]
+first_content = [["name","department","salary"],
+				 ["Lee","Operations",75000.00],
+				 ["Jane","Engineering",85000.00],
+				 ["Diego","Sales",80000.00]
 				 ]
 
 with filepath.open(mode="w", encoding="utf-8", newline="") as file:
