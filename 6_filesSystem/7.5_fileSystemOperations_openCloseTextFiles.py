@@ -17,6 +17,8 @@ my_file = open(r'C:\\Users\Joshua Albert\PycharmProjects\realPythonExercises\6_f
 # "ascii"
 print(my_file)
 
+# Always close the file again so there won't be remainders in memory
+my_file.close()  # always necessary as long as we don't use a 'WITH' statement!!
 
 
 # 2nd possibility of creating and accessing a file object using '.open()'
@@ -43,5 +45,3 @@ with my_filepath.open(mode="r", encoding="utf-8") as my_file:
 # "ascii"
 print(my_file)  # the output will show that we created an object belonging to class <_io.TextIOWrapper>
 
-# Always close the file again so there won't be remainders in memory
-my_file.close()

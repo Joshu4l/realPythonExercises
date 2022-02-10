@@ -10,7 +10,7 @@ with my_path.open(mode="w", encoding="utf-8") as my_file: # notice the "w"-mode 
 	# Now, actually write some content to the file
 	# BUT: be careful, former content will be overwritten unless mode="a" is used
 	my_file.write("\nHi, there")
-	my_file.close()
+
 
 
 with my_path.open(mode="a", encoding="utf-8") as my_file: # notice the "a"-mode here!
@@ -18,7 +18,7 @@ with my_path.open(mode="a", encoding="utf-8") as my_file: # notice the "a"-mode 
 	# Now,write some more content to the file
 	# BUT: This time using the "a"-mode (= "append") here
 	my_file.write("\nHi, again")
-	my_file.close()
+
 
 
 # Let's check what contents we added
@@ -27,7 +27,7 @@ with my_path.open(mode="r", encoding="utf-8") as my_file:
 
 	for line in my_file.readlines():
 		print(line, end="")
-	my_file.close()
+
 
 
 
@@ -40,7 +40,7 @@ with my_path.open(mode="a", encoding="utf-8") as my_file:
 
 	# Now, applying the '.writelines()' method to our file
 	my_file.writelines(lines_tba)  # takes in a list as its only argument
-	my_file.close()
+
 
 
 # Again, lets print our contents to see the results
@@ -48,6 +48,6 @@ print("\ncontents after appending a list of several lines at once")
 with my_path.open(mode="r", encoding="utf-8") as my_file:
 
 	print(my_file.read())
-	my_file.close()
+
 
 

@@ -13,7 +13,6 @@ with my_path.open(mode="r", encoding="utf-8") as my_file:
 	print(type(content)) # show what kind of data we're even dealing with
 	print(content) #  show the actual content
 
-	my_file.close()
 
 
 
@@ -25,9 +24,4 @@ with my_path.open(mode="r", encoding="utf-8") as my_file:
 
 	for l in my_file.readlines():
 		print(l, end="")  # setting the <end> attribute to ="" causes the iterator to skip blank lines
-
-	my_file.close()
-
-
-
 
