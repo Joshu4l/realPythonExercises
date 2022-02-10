@@ -15,11 +15,17 @@ first_content = [["name,department,salary"],
 				 ["Diego","Sales",80,000.00]
 				 ]
 
-
 with filepath.open(mode="w", encoding="utf-8", newline="") as file:
-
 	writer_obj = csv.writer(file)
 	writer_obj.writerows(first_content)
 
 
-with filepath.open(mode="w",)
+# normally we would read the file's content like this:
+with filepath.open(mode="r", encoding="utf-8", newline="") as file:
+	reader_obj = csv.reader(file)
+	for i in reader_obj:
+		print(i)
+
+# now that we're dealing with mixed data and corresponding headers,
+# we can proceed with the csv module's ''-method:
+
