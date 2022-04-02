@@ -25,6 +25,7 @@ print(concat_key)
 
 given_chiffre = "XHRV\PZZ"
 
+
 # EITHER:
 # for i,l in enumerate(given_chiffre):
 # 	new_letter = ord(l)-shift_diffs[i]
@@ -32,7 +33,7 @@ given_chiffre = "XHRV\PZZ"
 
 # OR:
 for i in range(len(given_chiffre)):
-	print(chr((ord(given_chiffre[i])- shift_diffs[i])))
+	print(chr((ord(given_chiffre[i]) - shift_diffs[i])))
 
 
 
