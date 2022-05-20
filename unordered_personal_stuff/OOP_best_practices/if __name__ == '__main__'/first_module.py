@@ -7,7 +7,7 @@ url = r"https://www.youtube.com/watch?v=sugvnHA7ElY&ab_channel=CoreySchafer"
 
 # This module only works / gets understandable in combination with module 'second_module'
 # So go ahead and check what's the content of that one, and execute it.
-# In comparison to that, click on RUN for 'first_module' directly
+# In comparison to that: click on RUN for 'first_module' directly
 
 
 print("This sentence is printed always")
