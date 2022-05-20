@@ -1,9 +1,12 @@
-import datetime
+# EXAMPLE ON HOW TO USE THE .__getitem__() METHOD IN ORDER TO ACCESS ITEMS OUT OF AN INDEXED OBJECT
+helpful_resource = r"https://www.geeksforgeeks.org/__getitem__-and-__setitem__-in-python/"
 
+import datetime
 class Customer:
 
 	def __init__(self, name):
 
+		# here, we are setting up an indexable object in form of a dictionary attribute
 		self.bank_credentials = {
 			'name' : name,
 			'registration_date' : datetime.date.today(),

@@ -1,6 +1,7 @@
 # EXAMPLE ON HOW TO USE THE .__getitem__() METHOD IN ORDER TO ACCESS ITEMS OUT OF AN INDEXED OBJECT
-import datetime
+helpful_resource = r"https://www.geeksforgeeks.org/__getitem__-and-__setitem__-in-python/"
 
+import datetime
 class Customer:
 
 	def __init__(self, name):
@@ -17,6 +18,8 @@ class Customer:
 		return f"how an object is printed because we defined a custom '__repr__()' method:\n" \
 			   f"{self.bank_credentials}\n"
 
+
+	# GET section
 	def __getitem__(self, key):
 		"""this method is specifically used on instance attributes which consist of an index-able container
 		like e.g. list, dictionary, array etc."""
