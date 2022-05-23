@@ -14,7 +14,13 @@ with sqlite3.connect("test_database.db") as db_connection:
 	# db_cursor.execute("Drop Table People")
 
 	# Example for creating a first DB table <People> with a total of 4 columns (id, FirstName, LastName and Age)
-	sql_create_table = "CREATE TABLE IF NOT EXISTS People(id INTEGER PRIMARY KEY AUTOINCREMENT, FirstName TEXT, LastName TEXT, Age INT);"
+	sql_create_table = """
+		CREATE TABLE IF NOT EXISTS People(
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			FirstName TEXT,
+			LastName TEXT,
+			Age INT
+		);"""
 	# IMPORTANT THINGS TO NOTICE HERE:
 		# The 'IF NOT EXISTS' expression here makes sure, to only actually create the table if it does NOT exist YET!
 			# Without this expression python would run into an error.
@@ -32,7 +38,7 @@ with sqlite3.connect("test_database.db") as db_connection:
 	# Example for inserting a handful of first datasets into the <People> table we created above:
 	sql_insert = "INSERT OR REPLACE INTO People VALUES(?, ?, ?, ?);"
 		# IMPORTANT THINGS TO KNOW HERE (1/2):  Notice the ?-SYNTAX
-		# This makes an insert statement INJECTION-PROOF!
+		# This makes an insert statement INJECTION-PROOF! -> this is also called PARAMETERIZED STATEMENTS
 		# Thus, better practice than to simply provide the values on the spot!
 
 		# IMPORTANT THINGS TO KNOW HERE (2/2):  Notice the 'OR IGNORE' specification

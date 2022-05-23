@@ -3,7 +3,7 @@
 #   OR (in absence of an existing one)
 # - HOW TO CREATE A NEW DATABASE CONNECTION
 
-# Basis for those activities is pythons standard lightweight DBMS package 'sqlite3'
+# Basis for those activities is python's standard lightweight DBMS package 'sqlite3'
 # Let's see what we can use it for:
 
 # INTERACTIONS WITH A SQLITE3-DATABASE TYPICALLY FOLLOW 4 STEPS:
@@ -36,6 +36,9 @@ print(result_row1)  # actually let the program return the first row of our query
 	# fetchall ()
 print(result_row1[0])  # actually let the program return the first value of the first row of our query result
 
+
+# Optional step (when performed without the use of a 'with'-clause): SAVE the data
+db_connection.commit() # 'commit' is simply DB jargon for saving data.
 
 # 4th: Close the database connection
 db_connection.close()
