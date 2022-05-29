@@ -19,6 +19,7 @@ class Person:
 		return f"{self.first_name} {self.last_name}"
 
 	# example for an attribute setter/reassigning-method
+	# this is especially useful when we want to make changes to RUDIMENTARY attributes that influence a bunch of others
 	@full_name.setter
 	def full_name(self, new_name):
 		"""First of all, split the input into a list of two components (new_first and new_last)

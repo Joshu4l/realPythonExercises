@@ -1,0 +1,4 @@
+# What is SQLAlchemy used for in Python?
+# SQLAlchemy is a library that facilitates the communication between Python programs and databases.
+# Most of the time, this library is used as an Object Relational Mapper (ORM) tool that translates Python classes
+# to tables on relational databases and automatically converts function calls to SQL statements.
