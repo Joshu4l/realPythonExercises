@@ -9,6 +9,7 @@ def retrieve_data():
 		with psycopg2.connect(**params) as con:
 
 			cur = con.cursor()
+
 			query = """SELECT * FROM person;"""  # similar line to the one used in the 'connect' best practice file
 			cur.execute(query)
 
@@ -18,6 +19,6 @@ def retrieve_data():
 		print(error)
 
 
-# call the function and
+# call the function and iterate over the result
 for row in retrieve_data():
 	print(row)
