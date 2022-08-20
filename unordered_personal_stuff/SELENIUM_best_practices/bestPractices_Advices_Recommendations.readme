@@ -1,0 +1,21 @@
+RECOMMENDATIONS for finding elements (PRIORITY DESC):
+
+# 1st:	ID tag or Name
+    element_by_id = driver.find_element(By.ID, "element_id")
+    element_by_name = driver.find_element(By.NAME, "element_name")
+
+
+# 2nd:	CSS classes
+    element = driver.find_element(By.CLASS_NAME, "element_xpath")
+
+
+# 3rd:	CSS selectors
+    element_by_css_selector = driver.find_element(By.CSS_SELECTOR, "element_css_selector")
+
+
+4th:	Xpath
+    element_by_xpath = driver.find_element(By.XPATH, "element_xpath")
+
+
+# 5th:	HTML tag names
+    element_by_html_tag = driver.find_element(By.TAG_NAME, "element_tag_name")
