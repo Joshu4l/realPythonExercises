@@ -94,9 +94,9 @@ class Card:
 			if actual_positions and (actual_positions == intended_positions):
 				return True
 			else:
-				print(f"<actual_positions> did not match <intended_positions>\n"
-					  f"actual: {actual_positions}\n"
-					  f"intended: {intended_positions} ")
+				# print(f"<actual_positions> did not match <intended_positions>\n"
+				# 	  f"actual: {actual_positions}\n"
+				# 	  f"intended: {intended_positions} ")
 				return False
 
 	@property
@@ -144,27 +144,17 @@ if __name__ == '__main__':
 		crd_number = input("card: ")
 		Card(crd_number)
 
-	# results = [i.overall_validation() for i in Card.cards]
-	# for i in results:
-	# 	print(i)
-
 	for c in Card.cards:
 		print(c.overall_validation)
 
-
+# TEST CASES:
 	# x = "4123456789123456"
 	# x = "5123-4567-8912-3456"
 	# x = "61234-567-8912-3456"
 	# x = "4123356789123456"
 	# x = "5133-3367-8912-3456"
-	x = "5123 - 3567 - 8912 - 3456"
+	# x = "5123 - 3567 - 8912 - 3456"
 
-	c1 = Card(x)
-	print(f"start validation:      {c1.start_validation}")
-	print(f"character validation:  {c1.character_validation}")
-	print(f"length validation:     {c1.length_validation}")
-	print(f"group validation:      {c1.group_validation}")
-	print(f"repetition validation: {c1.repetition_validation}")
 
 
 
